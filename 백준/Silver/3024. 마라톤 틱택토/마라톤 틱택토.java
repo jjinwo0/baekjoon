@@ -1,45 +1,50 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.StringTokenizer;
 
 public class Main {
-    static int[] dx = {0, 1, 1, -1};
-    static int[] dy = {1, 1, 0, 1};
+    static int dx[] = new int[]{0, 1, 1, -1};
+    static int dy[] = new int[]{1, 0, 1, 1}; //아래쪽, 오른쪽, 오른쪽 아래, 왼쪽 아래
+    static int n;
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int N = Integer.parseInt(br.readLine());
 
-        String[][] board = new String[N][N];
+        n = Integer.parseInt(br.readLine());
+        String[][] arr = new String[n][n];
 
-        for (int i=0; i<N; i++){
-            board[i] = br.readLine().split("");
-        }
+        for (int i = 0; i < n; i++)
+            arr[i] = br.readLine().split("");
 
-        for (int i=0; i<N; i++){
-            for (int j=0; j<N; j++){
+        System.out.println(findWinner(arr));
+    }
 
-                if (!board[i][j].equals(".")){
-                    for (int k=0; k<4; k++){
-                        int count = 1;
+    public static String findWinner(String[][] arr) {
+        int nx, ny, count;
 
-                        for (int n=1; n<3; n++) {
-                            int nY = i + n * dy[k];
-                            int nX = j + n * dx[k];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
 
-                            if (nY >= 0 && nX >= 0 && nY < N && nX < N && (board[i][j].equals(board[nY][nX])))
+                if (!arr[i][j].equals(".")) {
+                    for (int k = 0; k < dx.length; k++) { //dx dy 길이만큼 루프
+                        count = 1;
+
+                        for (int l = 1; l <= 2; l++) { //3개가 같은지 봐야하기 때문에 시작점+한칸, 시작점+두칸 -> 총 두 번 루프
+                            nx = j + l * dx[k];
+                            ny = i + l * dy[k];
+
+                            if (nx >= 0 && ny >= 0 && nx < n && ny < n && arr[i][j].equals(arr[ny][nx]))
+                                //nx ny가 유효값이면서 시작점 문자와 같으면 count를 1 증가
                                 count++;
                         }
 
-                        if (count == 3){
-                            System.out.println(board[i][j]);
-                            return ;
-                        }
+                        if (count == 3)
+                            return arr[i][j];
                     }
                 }
             }
         }
 
-        System.out.println("ongoing");
+        return "ongoing";
     }
 }
