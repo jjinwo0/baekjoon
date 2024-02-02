@@ -1,23 +1,30 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Scanner;
 
 public class Main {
+    public static void main(String[] args) throws IOException {
 
-    public static void main(String[] args) {
-
-        Scanner sc = new Scanner(System.in);
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         Queue<Integer> queue = new LinkedList<>();
 
-        int N = sc.nextInt();
+        int N = Integer.parseInt(br.readLine());
 
-        for (int i=0; i<N; i++){
-            queue.add(i+1);
+        for (int i=1; i<=N; i++){
+            queue.offer(i);
         }
 
-        while(queue.size()>1){
+        while(!queue.isEmpty()){
+
+            if (queue.size() == 1)
+                break;
+
             queue.poll();
-            queue.add(queue.poll());
+            Integer poll = queue.poll();
+
+            queue.add(poll);
         }
 
         System.out.println(queue.poll());
