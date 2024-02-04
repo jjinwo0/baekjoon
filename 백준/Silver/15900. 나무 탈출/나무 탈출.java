@@ -35,7 +35,7 @@ public class Main {
             graph[Y].add(X);
         }
 
-        game(1, -1, 0);
+        game(1, 0, 0);
 
         // 짝수면 진다!
         if (count % 2 == 0)
@@ -47,7 +47,7 @@ public class Main {
 
         // 자식 노드의 깊이를 확인
         // 현재 노드의 size가 1이고, 연결된 값이 parent node와 같다면 단일노드
-        if (parent != -1 && graph[x].size() == 1){
+        if (graph[x].size() == 1 && graph[x].get(0) == parent){
             count+=depth;
             return;
         }
