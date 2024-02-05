@@ -8,8 +8,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        Stack<Integer> value = new Stack<>();
-        Stack<Integer> index = new Stack<>();
+        Stack<int[]> stack = new Stack<>();
 
         int N = Integer.parseInt(br.readLine());
 
@@ -18,24 +17,21 @@ public class Main {
             int temp = Integer.parseInt(st.nextToken());
 
             while(true) {
-                if (!value.isEmpty()) {
+                if (!stack.isEmpty()) {
 
-                    Integer top = value.peek();
+                    Integer top = stack.peek()[0];
 
                     if (top > temp) {
 
-                        System.out.print(index.peek() + " ");
-                        value.push(temp);
-                        index.push(i);
+                        System.out.print(stack.peek()[1] + " ");
+                        stack.push(new int[]{temp, i});
                         break;
                     } else {
-                        value.pop();
-                        index.pop();
+                        stack.pop();
                     }
                 } else {
                     System.out.print("0 ");
-                    value.push(temp);
-                    index.push(i);
+                    stack.push(new int[]{temp, i});
                     break;
                 }
             }
