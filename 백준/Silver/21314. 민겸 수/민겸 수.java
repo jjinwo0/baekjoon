@@ -4,6 +4,7 @@ import java.io.InputStreamReader;
 
 public class Main {
 
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
@@ -15,7 +16,7 @@ public class Main {
 
     private static String makeMax(String str) {
 
-        String answer = "";
+        StringBuilder sb = new StringBuilder();
 
         int count = 0;
         for (int i=0; i<str.length(); i++){
@@ -26,13 +27,13 @@ public class Main {
             if (str.charAt(i) == 'K'){
 
                 if (i == 0 || (i > 0 && str.charAt(i-1) == 'K'))
-                    answer += "5";
+                    sb.append("5");
 
                 if (i > 0 && count != 0 && str.charAt(i-1) == 'M'){
-                    answer += "5";
+                    sb.append("5");
 
                     for (int k=0; k<count; k++){
-                        answer += "0";
+                        sb.append("0");
                     }
 
                     count = 0;
@@ -42,31 +43,31 @@ public class Main {
 
         if (count != 0){
             for (int i=0; i<count; i++){
-                answer += "1";
+                sb.append("1");
             }
         }
 
-        return answer;
+        return sb.toString();
     }
 
     private static String makeMin(String str) {
 
-        String answer = "";
+        StringBuilder sb = new StringBuilder();
 
         for (int i=0; i<str.length(); i++){
 
             if (str.charAt(i) == 'M'){
-                if (answer != "" && str.charAt(i-1) == 'M')
-                    answer += "0";
+                if (!sb.toString().isEmpty() && str.charAt(i-1) == 'M')
+                    sb.append("0");
 
-                else answer += "1";
+                else sb.append("1");
             }
 
             if (str.charAt(i) == 'K'){
-                answer += "5";
+                sb.append("5");
             }
         }
 
-        return answer;
+        return sb.toString();
     }
 }
