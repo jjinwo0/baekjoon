@@ -1,24 +1,43 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
-import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class Main {
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-        int sum = 0;
-        int N = sc.nextInt();
-        int[] A = new int[N];
-        int[] B = new int[N];
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
+
+        int N = Integer.parseInt(br.readLine());
+
+        Integer[] arrA = new Integer[N];
+        Integer[] arrB = new Integer[N];
+
+        StringTokenizer st = new StringTokenizer(br.readLine());
         for (int i=0; i<N; i++){
-            A[i] = sc.nextInt();
+            arrA[i] = Integer.parseInt(st.nextToken());
         }
+
+        st = new StringTokenizer(br.readLine());
         for (int i=0; i<N; i++){
-            B[i] = sc.nextInt();
+            arrB[i] = Integer.parseInt(st.nextToken());
         }
-        Arrays.sort(A);
-        Arrays.sort(B);
+
+
+        Arrays.sort(arrA);
+        Arrays.sort(arrB, (o1, o2) -> {
+            return o2 - o1;
+        });
+
+        int answer = 0;
         for (int i=0; i<N; i++){
-            sum += A[i] * B[N-1-i];
+            answer += arrA[i] * arrB[i];
         }
-        System.out.println(sum);
+
+        sb.append(answer);
+
+        System.out.println(sb.toString());
     }
 }
