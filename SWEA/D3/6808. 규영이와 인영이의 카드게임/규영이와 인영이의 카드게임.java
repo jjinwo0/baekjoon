@@ -41,8 +41,9 @@ public class Solution {
 
             dfs(0,  0, 0, 0);
 
-            System.out.println("#"+test_case+" "+winCount+" "+loseCount);
+            sb.append("#"+test_case+" "+winCount+" "+loseCount).append("\n");
         }
+        System.out.println(sb);
     }
 
     private static void dfs(int index, int depth, int win, int lose) {
