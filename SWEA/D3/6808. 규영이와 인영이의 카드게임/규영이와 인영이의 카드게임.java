@@ -5,69 +5,97 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 
 public class Solution {
-
-    static ArrayList<Integer> gyu, in;
-    static boolean[] check;
-    static int gScore, iScore;
-    static int winCount, loseCount;
-
     public static void main(String[] args) throws IOException {
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
         StringBuilder sb = new StringBuilder();
+
         int T = Integer.parseInt(br.readLine());
 
         for (int test_case=1; test_case<=T; test_case++){
 
-            gyu = new ArrayList<>();
-            in = new ArrayList<>();
-            check = new boolean[9];
-            gScore = 0; iScore = 0;
-            winCount = 0; loseCount = 0;
+            ArrayList<Integer> gyu = new ArrayList<>();
+            ArrayList<Integer> in = new ArrayList<>();
 
             st = new StringTokenizer(br.readLine());
-
-            for (int i=1; i<=9; i++){
+            for (int i=0; i<9; i++){
                 gyu.add(Integer.parseInt(st.nextToken()));
             }
 
-            for (int i=1; i<=18; i++){
+            for (int i=1; i<19; i++){
                 if (gyu.contains(i))
                     continue;
 
                 in.add(i);
             }
 
-            dfs(0,  0, 0, 0);
+            gyu.sort(((o1, o2) -> o1 - o2));
 
-            sb.append("#"+test_case+" "+winCount+" "+loseCount).append("\n");
+            int winCount = 0;
+            int loseCount = 0;
+
+            do {
+                int winScore = 0;
+                int loseScore = 0;
+
+                for (int i=0; i<gyu.size(); i++){
+                    if (gyu.get(i) > in.get(i))
+                        winScore += gyu.get(i) + in.get(i);
+
+                    else loseScore += gyu.get(i) + in.get(i);
+                }
+
+                if (winScore > loseScore)
+                    winCount+=1;
+
+                if(loseScore > winScore)
+                    loseCount+=1;
+
+            }while(nextPermutation(gyu));
+
+            sb
+                    .append("#")
+                    .append(test_case)
+                    .append(" ").append(winCount)
+                    .append(" ").append(loseCount)
+                    .append("\n");
         }
         System.out.println(sb);
     }
 
-    private static void dfs(int index, int depth, int win, int lose) {
+    private static boolean nextPermutation(ArrayList<Integer> list) {
 
-        if (depth == 9){
-            if (lose < win)
-                winCount++;
-            else loseCount++;
+        int i = list.size()-1;
 
-            return;
+        while(i > 0 && list.get(i) < list.get(i-1))
+            i--;
+
+        if (i <= 0)
+            return false;
+
+        int j = list.size()-1;
+
+        while(list.get(j) < list.get(i-1))
+            j--;
+
+        swap(list, i-1, j);
+
+        int size = list.size()-1;
+
+        while(i < size){
+            swap(list, i, size);
+            i++;
+            size--;
         }
 
-        for (int i=0; i<gyu.size(); i++){
-            if (!check[i]){
-                check[i] = true;
-
-                if (gyu.get(i) > in.get(index)) {
-                    dfs(index + 1, depth + 1, win + in.get(index) + gyu.get(i), lose);
-                } else{
-                    dfs(index + 1, depth + 1, win, lose + gyu.get(i) + in.get(index));
-                }
-
-                check[i] = false;
-            }
-        }
+        return true;
     }
+
+    private static void swap(ArrayList<Integer> list, int i, int j) {
+
+        int temp = list.get(i);
+        list.set(i, list.get(j));
+        list.set(j, temp);
+    }
+
 }
