@@ -8,6 +8,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
+        StringBuilder sb = new StringBuilder();
 
         int N = Integer.parseInt(st.nextToken());
         int L = Integer.parseInt(st.nextToken());
@@ -19,7 +20,7 @@ public class Main {
             arr[i] = Integer.parseInt(st.nextToken());
         }
 
-        Arrays.sort(arr, (o1, o2) -> o1-o2);
+        Arrays.sort(arr);
 
         for (int i=0; i<N; i++){
             if (arr[i] <= L){
@@ -27,6 +28,7 @@ public class Main {
             } else break;
         }
 
-        System.out.println(L);
+        sb.append(L);
+        System.out.println(sb);
     }
 }
