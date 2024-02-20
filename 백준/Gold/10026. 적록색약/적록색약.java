@@ -1,67 +1,74 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
 public class Main {
-    static int[] dx = {1, -1, 0, 0};
-    static int[] dy = {0, 0, 1, -1};
-    static char[][] graph;
+
+    static int N, count, blind;
+
+    static char[][] map;
+
     static boolean[][] check;
-    static int N;
+
+    static int[] dX = {1, 0, -1, 0};
+    static int[] dY = {0, 1, 0, -1};
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder sb = new StringBuilder();
 
         N = Integer.parseInt(br.readLine());
-        graph = new char[N][N];
+        map = new char[N][N];
         check = new boolean[N][N];
 
         for (int i=0; i<N; i++){
-            graph[i] = br.readLine().toCharArray();
-        }
+            char[] charArray = br.readLine().toCharArray();
 
-        int normal = 0;
-        int blindness = 0;
+            for (int j=0; j<N; j++) {
+                map[i][j] = charArray[j];
+            }
+        }
 
         for (int i=0; i<N; i++){
             for (int j=0; j<N; j++){
-                if (!check[i][j]){
+                if(!check[i][j]) {
                     dfs(i, j);
-                    normal++;
+                    count++;
                 }
-                if (graph[i][j] == 'G')
-                    graph[i][j] = 'R';
+
+                if (map[i][j] == 'G')
+                    map[i][j] = 'R';
             }
         }
 
         check = new boolean[N][N];
         for (int i=0; i<N; i++){
             for (int j=0; j<N; j++){
-                if (!check[i][j]){
+                if(!check[i][j]) {
                     dfs(i, j);
-                    blindness++;
+                    blind++;
                 }
             }
         }
 
-        System.out.println(normal + " " + blindness);
+        sb.append(count).append(" ").append(blind);
+
+        System.out.println(sb);
     }
 
-    private static void dfs(int x, int y) {
+    private static void dfs(int y, int x) {
 
-        if (check[x][y])
-            return;
+        char c = map[y][x];
 
-        check[x][y] = true;
-        char currentChar = graph[x][y];
+        check[y][x] = true;
 
         for (int i=0; i<4; i++){
-            int nx = x + dx[i];
-            int ny = y + dy[i];
+            int nY = y + dY[i];
+            int nX = x + dX[i];
 
-            if (nx >= 0 && ny >= 0 && nx < N && ny < N){
-                if (graph[nx][ny] == currentChar && !check[nx][ny])
-                    dfs(nx, ny);
-            }
+            if (nY >= 0 && nX >= 0 && nY < N && nX < N && !check[nY][nX] && map[nY][nX] == c)
+                dfs(nY, nX);
         }
     }
 }
