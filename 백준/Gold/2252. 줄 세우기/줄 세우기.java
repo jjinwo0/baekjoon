@@ -6,6 +6,19 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
+/**
+ * 결과 : 정답입니다!!
+ * 메모리 : 49028KB
+ * 시간 : 596ms
+ *
+ * 접근 방법
+ * -- 수업 때 배웠던 위상 정렬을 그대로 적용하였습니다.
+ * -- 첫 번째 주어지는 숫자는 반드시 앞에, 뒤에 주어지는 숫자는 앞선 숫자보다 더 뒤에 세워져야 합니다.
+ * -- 이러한 조건을 바탕으로 앞에 주어진 숫자가 뒤에 주어지는 숫자를 가리키는 그래프를 생각하였습니다.
+ * -- 노드를 연결시키는 모습을 이차원 ArrayList로 구현하였고, 위상 정렬을 진행하였습니다.
+ *
+ * @author 박진우
+ */
 public class Main {
     public static void main(String[] args) throws IOException {
 
@@ -32,14 +45,7 @@ public class Main {
             int b = Integer.parseInt(st.nextToken());
 
             list.get(a).add(b);
-        }
-
-        for (int i=1; i<=N; i++){
-            ArrayList<Integer> nodes = list.get(i);
-
-            for (Integer node : nodes) {
-                edge[node]++;
-            }
+            edge[b]++;
         }
 
         Queue<Integer> queue = new LinkedList<>();
