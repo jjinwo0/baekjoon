@@ -2,47 +2,57 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Stack;
+import java.util.StringTokenizer;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        Stack<int[]> stack = new Stack<>();
+        int[] homework = new int[2];
+        int answer = 0;
+        StringTokenizer st;
+
         int N = Integer.parseInt(br.readLine());
-        Stack<Task> stack = new Stack<>();
 
-        int score = 0;
+        for (int n=0; n<N; n++){
+            st = new StringTokenizer(br.readLine());
 
-        for (int i=0; i<N; i++){
-            String[] input = br.readLine().split(" ");
-            Task task = null;
+            int input = Integer.parseInt(st.nextToken());
 
-            if (input.length > 1){
+            if (input == 0){
 
-                task = new Task(Integer.parseInt(input[1]), Integer.parseInt(input[2])-1);
-                stack.push(task);
-            } else {
-                if (!stack.isEmpty()){
-                    task = stack.peek();
-                    task.time--;
+                if (homework[1] > 0){
+                    homework[1] -= 1;
+
+                    if (homework[1] == 0) {
+                        answer += homework[0];
+
+                        if (!stack.isEmpty())
+                            homework = stack.pop();
+                    }
                 }
+
+                continue;
             }
 
-            if (!stack.isEmpty() && task.time == 0){
-                score += task.score;
-                stack.pop();
+            if (input == 1){
+
+                if (homework[1] > 0)
+                    stack.push(homework);
+
+                homework = new int[2];
+
+                homework[0] = Integer.parseInt(st.nextToken());
+                homework[1] = Integer.parseInt(st.nextToken()) - 1;
+
+                if (homework[1] == 0) {
+                    answer += homework[0];
+                    if (!stack.isEmpty())
+                        homework = stack.pop();
+                }
             }
         }
 
-        System.out.println(score);
-    }
-}
-
-class Task{
-
-    int score;
-    int time;
-
-    public Task(int score, int time) {
-        this.score = score;
-        this.time = time;
+        System.out.println(answer);
     }
 }
