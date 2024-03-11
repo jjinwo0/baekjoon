@@ -26,8 +26,6 @@ public class Main {
 
     static int[][][] map;
 
-    static boolean[][][] visited;
-
     static int[] dy = {0, 1, 0, -1, 0, 0};
     static int[] dx = {1, 0, -1, 0, 0, 0};
     static int[] dh = {0, 0, 0, 0, 1, -1};
@@ -43,9 +41,10 @@ public class Main {
         H = Integer.parseInt(st.nextToken());
 
         map = new int[H][N][M];
-        visited = new boolean[H][N][M];
         tomatoList = new ArrayList<>();
         answer = -1;
+
+        boolean zero = true;
 
         for (int h=0; h<H; h++){
             for (int i=0; i<N; i++){
@@ -54,13 +53,16 @@ public class Main {
                 for (int j=0; j<M; j++){
                     map[h][i][j] = Integer.parseInt(st.nextToken());
 
+                    if (map[h][i][j] == 0 && zero)
+                        zero = false;
+
                     if (map[h][i][j] == 1)
                         tomatoList.add(new Tomato(h, i, j, 0));
                 }
             }
         }
 
-        if (check()){
+        if (zero){
             System.out.println(0);
             return;
         }
@@ -97,8 +99,6 @@ public class Main {
             if (tomato.time > answer)
                 answer = tomato.time;
 
-            visited[tomato.h][tomato.y][tomato.x] = true;
-
             for (int i=0; i<6; i++){
 
                 int nh = dh[i] + tomato.h;
@@ -107,11 +107,9 @@ public class Main {
 
                 if (nh >= 0 && nh < H &&
                     ny >= 0 && ny < N &&
-                    nx >= 0 && nx < M &&
-                    !visited[nh][ny][nx] && map[nh][ny][nx] == 0){
+                    nx >= 0 && nx < M && map[nh][ny][nx] == 0){
                     map[nh][ny][nx] = 1;
                     queue.offer(new Tomato(nh, ny, nx, tomato.time + 1));
-                    visited[nh][ny][nx] = true;
                 }
             }
         }
