@@ -1,36 +1,65 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.StringTokenizer;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
 
-        int N = Integer.parseInt(st.nextToken());
-        int K = Integer.parseInt(st.nextToken());
+	static int[] weight;
+	static int[] value;
+	static int[][] answer;
+	public static void main(String[] args)
+	{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		try {
+			String[] s = br.readLine().split(" ");
+			int weight_max = Integer.parseInt(s[1]);
+			int count = Integer.parseInt(s[0]);
+			weight = new int[count+1];
+			value = new int[count+1];
+			answer = new int[count+1][weight_max+1];
+			for(int i=1;i<=count;i++)
+			{
+				s = br.readLine().split(" ");
+				weight[i]=Integer.parseInt(s[0]);
+				value[i]=Integer.parseInt(s[1]);		
+			}
+			for(int i =1; i<=count;i++)
+			{
+				int d_wei = weight[i];
+				int d_val = value[i];
+				for(int j=0;j<=weight_max;j++)
+				{
+					if(j>=d_wei)
+					{
+						answer[i][j]=max((answer[i-1][j-d_wei]+d_val),answer[i-1][j]);
+						//System.out.println("answer " + i + " " + j+ " = "+ answer[i][j]);
+					}
+					else
+					{
+						answer[i][j]=answer[i-1][j];
+						//System.out.println("answer " + i + " " + j+ " = "+ answer[i][j]);
+					}
+				}
+			}
+			System.out.println(answer[count][weight_max]);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
+	public static int max(int a, int b) {
+		// TODO Auto-generated method stub
+		if(a>=b)
+		{
+			return a;
+		}
+		else
+			
+		{
+			return b;
+		}
+		
+	}
 
-        int[][] dp = new int[N + 1][K + 1];
-        int[][] items = new int[N + 1][2];
-
-        for (int i=1; i<=N; i++) {
-
-            st = new StringTokenizer(br.readLine());
-
-            items[i][0] = Integer.parseInt(st.nextToken());
-            items[i][1] = Integer.parseInt(st.nextToken());
-        }
-
-        for (int k=1; k<=K; k++){
-            for (int i=1; i<=N; i++){
-                dp[i][k] = dp[i-1][k];
-
-                if (k - items[i][0] >= 0)
-                    dp[i][k] = Math.max(dp[i-1][k], items[i][1] + dp[i-1][k - items[i][0]]);
-            }
-        }
-
-        System.out.println(dp[N][K]);
-    }
 }
