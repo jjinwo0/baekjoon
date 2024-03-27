@@ -19,26 +19,27 @@ public class Solution {
                     .mapToInt(Integer::parseInt)
                     .toArray();
 
-            // LIS를 구하기 위한 DP 배열
-            int[] dp = new int[N];
+            // LIS를 저장할 배열
+            int[] lis = new int[N];
+            // LIS의 길이를 저장할 변수
+            int length = 0;
 
-            // DP 배열의 모든 위치를 1로 초기화합니다. 
-            // (최소한 각 수 자체로 이루어진 부분 수열의 길이는 1이기 때문입니다.)
-            Arrays.fill(dp, 1);
-
-            // LIS 구하기
-            for (int i = 1; i < N; i++) {
-                for (int j = 0; j < i; j++) {
-                    if (arr[i] > arr[j] && dp[i] < dp[j] + 1) {
-                        dp[i] = dp[j] + 1;
-                    }
-                }
+            for (int i = 0; i < N; i++) {
+                // 이진 탐색을 사용하여 arr[i]가 들어갈 위치를 찾습니다.
+                int pos = Arrays.binarySearch(lis, 0, length, arr[i]);
+                
+                // 찾은 위치가 음수라면, arr[i]가 들어갈 위치가 없음을 의미합니다.
+                // 이 경우, -(삽입 포인트) - 1을 해서 삽입 포인트를 얻습니다.
+                if (pos < 0) pos = -(pos + 1);
+                
+                // arr[i]를 적절한 위치에 삽입합니다.
+                lis[pos] = arr[i];
+                
+                // 삽입 위치가 LIS의 끝이라면, LIS의 길이를 증가시킵니다.
+                if (pos == length) length++;
             }
 
-            // DP 배열에서 최댓값 찾기
-            int max = Arrays.stream(dp).max().getAsInt();
-
-            sb.append(max).append("\n");
+            sb.append(length).append("\n");
         }
 
         System.out.println(sb);
