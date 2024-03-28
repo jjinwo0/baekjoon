@@ -1,86 +1,63 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
-public class Main {
-
-    static class Move {
-        int y;
-        int x;
-        int beerCount;
-
-        public Move(int y, int x, int beerCount) {
-            this.y = y;
-            this.x = x;
-            this.beerCount = beerCount;
-        }
-    }
-
-    static int N;
-
-    static int[] festival;
-    static boolean[] visited;
-    static int[][] store;
-
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-        int T = Integer.parseInt(br.readLine());
-
-        for (int t=1; t<=T; t++){
-            N = Integer.parseInt(br.readLine());
-
-            StringTokenizer st = new StringTokenizer(br.readLine());
-
-            int[] start = new int[2];
-            festival = new int[2];
-            visited = new boolean[N];
-
-            start[0] = Integer.parseInt(st.nextToken());
-            start[1] = Integer.parseInt(st.nextToken());
-
-            store = new int[N][2];
-
-            for (int i=0; i<N; i++){
-                st = new StringTokenizer(br.readLine());
-
-                store[i][0] = Integer.parseInt(st.nextToken());
-                store[i][1] = Integer.parseInt(st.nextToken());
-            }
-
-            st = new StringTokenizer(br.readLine());
-            festival[0] = Integer.parseInt(st.nextToken());
-            festival[1] = Integer.parseInt(st.nextToken());
-
-            bfs(start);
-        }
-    }
-
-    private static void bfs(int[] start) {
-
-        Queue<int[]> queue = new LinkedList<>();
-
-        queue.offer(start);
-
-        while(!queue.isEmpty()){
-            int[] poll = queue.poll();
-
-            if (Math.abs(poll[0] - festival[0]) + Math.abs(poll[1] - festival[1]) <= 1000){
-                System.out.println("happy");
-                return;
-            }
-
-            for (int i=0; i<N; i++){
-                if (!visited[i] && Math.abs(poll[0] - store[i][0]) + Math.abs(poll[1] - store[i][1]) <= 1000){
-                    queue.offer(new int[]{store[i][0], store[i][1]});
-                    visited[i] = true;
-                }
-            }
-        }
-
-        System.out.println("sad");
-    }
+public class Main{
+	static class node{
+		int y;
+		int x;
+		public node(int y, int x) {
+			this.y=y;
+			this.x=x;
+		}
+	}
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		//StringTokenizer st = new StringTokenizer(br.readLine());
+		int T = Integer.parseInt(br.readLine());
+		for(int t=0;t<T;t++) {
+			int n = Integer.parseInt(br.readLine());
+			boolean[][] canMove = new boolean[n+2][n+2];
+			node[] list = new node[n+2];
+			for(int i=0;i<n+2;i++) {
+				StringTokenizer st = new StringTokenizer(br.readLine());
+				list[i]=new node(Integer.parseInt(st.nextToken()),Integer.parseInt(st.nextToken()));
+			}
+			for(int i=0;i<n+2;i++) {
+				for(int j=0;j<n+2;j++) {
+					int y_dist = Math.abs(list[i].y-list[j].y);
+					int x_dist = Math.abs(list[i].x-list[j].x);
+					if(y_dist + x_dist <= 1000) {
+						canMove[i][j]=true;
+					}
+				}
+			}
+			if(bfs(canMove,n+1)) {
+				System.out.println("happy");
+			}else {
+				System.out.println("sad");
+			}
+		}
+			
+		
+	}
+	private static boolean bfs(boolean[][] canMove, int last) {
+		
+		boolean visited[] = new boolean[last+1];
+		
+		Queue<Integer> queue = new ArrayDeque<>();
+		queue.add(0);
+		visited[0]=true;
+		while(!queue.isEmpty()) {
+			int now = queue.poll();
+			if(now == last) return true;
+			for(int i=0;i<=last;i++) {
+				if(canMove[now][i] && !visited[i]) {
+					queue.add(i);
+					visited[i]=true;
+				}
+			}
+		}
+		return false;
+	}
+	
 }
