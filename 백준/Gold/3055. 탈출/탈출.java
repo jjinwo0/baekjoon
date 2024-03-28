@@ -1,112 +1,129 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
-public class Main {
+public class Main{
+	static class node {
+		int y;
+		int x;
+		int count;
 
-    static int R, C, answer;
-    static String[][] map;
-    static int[] dX = {1, 0, -1, 0};
-    static int[] dY = {0, 1, 0, -1};
-    static boolean[][] check;
-    static Queue<Node> queue = new LinkedList<>();
-    static Queue<Node> rain = new LinkedList<>();
+		public node(int y, int x) {
+			this.y = y;
+			this.x = x;
+		}
 
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
+		public node(int y, int x, int count) {
+			this.y = y;
+			this.x = x;
+			this.count = count;
+		}
+	}
 
-        R = Integer.parseInt(st.nextToken());
-        C = Integer.parseInt(st.nextToken());
+	public static void main(String[] args) throws IOException {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		int n = Integer.parseInt(st.nextToken());
+		int m = Integer.parseInt(st.nextToken());
+		char[][] board = new char[n][m];
+		node sonic = null;
+		node biber = null;
+		ArrayList<node> list = new ArrayList<>();
+		for (int i = 0; i < n; i++) {
+			char[] temp = br.readLine().toCharArray();
+			for (int j = 0; j < m; j++) {
+				board[i][j] = temp[j];
+				if (board[i][j] == 'D') {
+					biber = new node(i, j);
+				}
+				if (board[i][j] == 'S') {
+					sonic = new node(i, j, 0);
+				}
+				if (board[i][j] == '*') {
+					list.add(new node(i, j));
+				}
+			}
+		}
+		// 물판 깔기
+		int[][] water = movewater(board, list, n, m);
+		//System.out.println(Arrays.deepToString(water));
+		int answer = moveSonic(board, water, n, m, sonic, biber);
+		if (answer < 0) {
+			System.out.println("KAKTUS");
+		} else {
+			System.out.println(answer);
+		}
+	}
 
-        map = new String[R][C];
-        check = new boolean[R][C];
-        answer = -1;
+	private static int moveSonic(char[][] board, int[][] water, int n, int m, node sonic, node biber) {
+		int[] dy = { 0, 0, -1, 1 };
+		int[] dx = { -1, 1, 0, 0 };
+		int answer = -1;
+		Queue<node> queue = new ArrayDeque<>();
 
-        for (int i=0; i<R; i++){
-            String[] put = br.readLine().split("");
+		boolean[][] visited = new boolean[n][m];
 
-            for (int j=0; j<C; j++){
-                map[i][j] = put[j];
+		queue.add(sonic);
+		visited[sonic.y][sonic.x] = true;
 
-                if (map[i][j].equals("S")) {
-                    queue.add(new Node(i, j, 0));
-                }
+		while (!queue.isEmpty()) {
+			node now = queue.poll();
+			int y = now.y;
+			int x = now.x;
+			int time = now.count;
+			//System.out.println(y + " " + x + " " + time);
+			if (y == biber.y && x == biber.x) {
+				return time;
+			}
+			for (int i = 0; i < 4; i++) {
+				int ny = y + dy[i];
+				int nx = x + dx[i];
+				if (ny >= 0 && ny < n && nx >= 0 && nx < m && !visited[ny][nx]) {
+					if (board[ny][nx] == 'X' || water[ny][nx] <= time+1)
+						continue;
+					queue.add(new node(ny, nx, time + 1));
+					visited[ny][nx] = true;
+				}
+			}
 
-                if (map[i][j].equals("*")){
-                    rain.add(new Node(i, j, 0));
-                }
-            }
-        }
+		}
 
-        bfs();
+		return answer;
+	}
 
-        System.out.println(answer == -1 ? "KAKTUS" : answer);
-    }
+	private static int[][] movewater(char[][] board, ArrayList<node> list, int n, int m) {
+		int[] dy = { 0, 0, -1, 1 };
+		int[] dx = { -1, 1, 0, 0 };
+		int[][] water = new int[n][m];
+		for(int i=0;i<n;i++) {
+			for(int j=0;j<m;j++) {
+				water[i][j]=2501;
+			}
+		}
+		boolean[][] visited = new boolean[n][m];
+		Queue<node> queue = new ArrayDeque<>();
+		for (node nod : list) {
+			queue.add(nod);
+			visited[nod.y][nod.x] = true;
+			water[nod.y][nod.x]=0;
+			//System.out.println(nod.y + " " + nod.x);
+		}
 
-    private static void bfs() {
-
-        while(!queue.isEmpty()){
-
-            wideRain();
-
-            int size = queue.size();
-            for (int n=0; n<size; n++) {
-                Node node = queue.poll();
-
-                for (int i = 0; i < 4; i++) {
-                    int nY = node.y + dY[i];
-                    int nX = node.x + dX[i];
-
-                    if (nY >= 0 && nX >= 0 && nY < R && nX < C) {
-
-                        if (map[nY][nX].equals("D")) {
-                            answer = node.move + 1;
-                            return;
-                        }
-
-                        if (map[nY][nX].equals(".")) {
-                            map[nY][nX] = "S";
-                            queue.add(new Node(nY, nX, node.move + 1));
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private static void wideRain() {
-
-        int length = rain.size();
-
-        for (int r=0; r<length; r++) {
-
-            Node rainNode = rain.poll();
-
-            for (int i = 0; i < 4; i++) {
-                int nY = rainNode.y + dY[i];
-                int nX = rainNode.x + dX[i];
-
-                if (nY >= 0 && nX >= 0 && nY < R && nX < C && map[nY][nX].equals(".")) {
-                    map[nY][nX] = "*";
-                    rain.add(new Node(nY, nX, rainNode.move + 1));
-                }
-            }
-        }
-    }
-}
-
-class Node {
-    int y;
-    int x;
-    int move;
-
-    public Node(int y, int x, int move) {
-        this.y = y;
-        this.x = x;
-        this.move = move;
-    }
+		while (!queue.isEmpty()) {
+			node now = queue.poll();
+			int y = now.y;
+			int x = now.x;
+			int nexttime = water[y][x] + 1;
+			for (int i = 0; i < 4; i++) {
+				int ny = y + dy[i];
+				int nx = x + dx[i];
+				if (ny >= 0 && ny < n && nx >= 0 && nx < m && !visited[ny][nx]) {
+					if (board[ny][nx] == 'X' || board[ny][nx] == 'D') continue;
+					queue.add(new node(ny, nx));
+					visited[ny][nx] = true;
+					water[ny][nx] = nexttime;
+				}
+			}
+		}
+		return water;
+	}
 }
