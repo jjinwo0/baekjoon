@@ -15,6 +15,7 @@ public class Solution {
 	public static void main(String[] args) throws Exception{
 		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine());
+		StringBuilder sb = new StringBuilder();
 		int T = Integer.parseInt(st.nextToken());
 		for(int t=1;t<=T;t++) {
 			st = new StringTokenizer(br.readLine());
@@ -38,8 +39,8 @@ public class Solution {
 				}
 			}
 			
-			if(odd && even) {	
-				System.out.printf("#%d %d\n",t,-1);
+			if(odd && even) {
+				sb.append("#"+t+" "+"-1\n");
 				continue;
 			}
 			int dist = nodes[max].dist;
@@ -48,8 +49,8 @@ public class Solution {
 			while((((start+1)*start)/2)%2 != (dist % 2) || (((start+1)*start)/2) < dist ) {
 				start++;
 			}
-			
-			System.out.printf("#%d %d\n",t,(int)start);
+			sb.append("#"+t+" "+(int)start+"\n");
 		}
+		System.out.println(sb);
 	}
 }
