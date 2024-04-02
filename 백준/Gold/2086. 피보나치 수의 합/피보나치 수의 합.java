@@ -1,40 +1,53 @@
-import java.util.*;
-import java.io.*;
-public class Main{
-	static final int p =1000000000;
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		long a = Long.parseLong(st.nextToken());
-		long b = Long.parseLong(st.nextToken());
-		System.out.println(minus(a,b));
-	}
-	private static long minus(long a, long b ) {
-		long[][] aMatrix = findfibo(a);
-		long[][] bMatrix = findfibo(b);
-		
-		long answer = ((bMatrix[0][0]+bMatrix[0][1]-1)%p - (aMatrix[0][0]-1)%p + p)%p;	
-		return answer;
-	}
-	private static long[][] findfibo(long n) {	
-		if(n==0) return new long[][] {{1,0},{0,0}};
-		if(n==1) return new long[][] {{1,1},{1,0}};
-		
-		long[][] matrix = findfibo(n/2);
-		if(n%2==0) {
-			return doMatrix(matrix,matrix);
-		}else{
-			return doMatrix(doMatrix(matrix,matrix),findfibo(1));
-		}
-	}
-	private static long[][] doMatrix(long[][] a , long[][] b){
-		long[][] answer = new long[2][2];
-		
-		answer[0][0]= ((a[0][0]*b[0][0])%p+ (a[0][1]*b[1][0])%p)%p;
-		answer[0][1]= ((a[0][0]*b[0][1])%p+ (a[0][1]*b[1][1])%p)%p;
-		answer[1][0]= ((a[1][0]*b[0][0])%p+ (a[1][1]*b[1][0])%p)%p;
-		answer[1][1]= ((a[1][0]*b[0][1])%p+ (a[1][1]*b[1][1])%p)%p;
-		
-		return answer;
-	}
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
+
+public class Main {
+
+    static long MOD = 1000000000;
+
+    public static void main(String[] args) throws IOException {
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+
+        long a = Long.parseLong(st.nextToken());
+        long b = Long.parseLong(st.nextToken());
+
+        System.out.println((fibo(b+2) - fibo(a+1) + MOD) % MOD);
+    }
+
+    private static long fibo(long n) {
+        if (n == 0) return 0;
+        if (n == 1) return 1;
+        long[][] F = {{1, 1}, {1, 0}};
+        power(F, n - 1);
+
+        return F[0][0];
+    }
+
+    private static void multiply(long[][] F, long[][] M) {
+        long x = (F[0][0] * M[0][0] + F[0][1] * M[1][0]) % MOD;
+        long y = (F[0][0] * M[0][1] + F[0][1] * M[1][1]) % MOD;
+        long z = (F[1][0] * M[0][0] + F[1][1] * M[1][0]) % MOD;
+        long w = (F[1][0] * M[0][1] + F[1][1] * M[1][1]) % MOD;
+
+        F[0][0] = x;
+        F[0][1] = y;
+        F[1][0] = z;
+        F[1][1] = w;
+    }
+
+    private static void power(long[][] F, long n) {
+        if( n == 0 || n == 1)
+            return;
+        long[][] M = {{1, 1}, {1, 0}};
+
+        power(F, n / 2);
+        multiply(F, F);
+
+        if (n % 2 != 0)
+            multiply(F, M);
+    }
 }
