@@ -1,147 +1,136 @@
+import java.util.*;
+import java.io.*;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
+class Main {
+    static int R, C, T;
+    static int[][] arr = new int[50][50];
+    static List<Integer> airCleanerRows = new ArrayList<>();
+    static int sumOfDust = 2;
 
-public class Main{
-	private static class AirCorn {
-		int y;
-		int x;
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-		public AirCorn(int y, int x) {
-			this.y = y;
-			this.x = x;
-		}
-	}
+        // input
+        st = new StringTokenizer(br.readLine());
+        R = Integer.parseInt(st.nextToken());
+        C = Integer.parseInt(st.nextToken());
+        T = Integer.parseInt(st.nextToken());
 
-	private static class node {
-		int y;
-		int x;
-		int count;
+        for (int i = 0; i < R; i++) {
+            st = new StringTokenizer(br.readLine());
 
-		public node(int y, int x, int count) {
-			this.y = y;
-			this.x = x;
-			this.count = count;
-		}
-	}
+            for (int j = 0; j < C; j++) {
+                arr[i][j] = Integer.parseInt(st.nextToken());
+                sumOfDust += arr[i][j];
 
-	private static int R, C, T;
-	private static int[][] board;
+                if (arr[i][j] == -1) {
+                    airCleanerRows.add(i);
+                }
+            }
+        }
 
-	private static ArrayList<AirCorn> AirCorns = new ArrayList<>();
+        // solution
+        solution();
+    }
 
-	private static Queue<node> nodes = new LinkedList<>();
-	private static int[] dy = { 1, 0, -1, 0 };
-	private static int[] dx = { 0, 1, 0, -1 };
+    static void solution() {
+        while (T-- > 0) {
+            // 1. 먼지 확산
+            arr = spreadDust();
 
-	public static void main(String[] args) throws Exception {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		String[] info = br.readLine().split(" ");
-		R = Integer.parseInt(info[0]);
-		C = Integer.parseInt(info[1]);
-		T = Integer.parseInt(info[2]);
-		board = new int[R][C];
+            // 2. 공기청정기 가동
+            executeAirCleaner();
+        }
 
-		for (int i = 0; i < R; i++) {
-			String[] yInfo = br.readLine().split(" ");
-			for (int j = 0; j < C; j++) {
-				board[i][j] = Integer.parseInt(yInfo[j]);
-				addAirCorn(board[i][j], i, j);
-			}
-		}
+        System.out.println(calculateSum());
+    }
 
-		while (T > 0) {
-			findnode();
-			diffusenode();
-			operateAirCorn("counterclockwise");
-			operateAirCorn("clockwise");
-			T--;
-		}
+    static int[][] spreadDust() {
+        int[][] temp = new int[50][50];
+        int[] dx = {-1, 1, 0, 0};
+        int[] dy = {0, 0, -1, 1};
 
-		int result = 0;
-		for (int i = 0; i < R; i++) {
-			for (int j = 0; j < C; j++) {
-				result += board[i][j] == -1 ? 0 : board[i][j];
-			}
-		}
-		System.out.println(result);
-	}
+        // 확산된 미세먼지를 temp 배열에 계산
+        for (int x = 0; x < R; x++) {
+            for (int y = 0 ; y < C; y++) {
+                if (arr[x][y] == -1) {
+                    temp[x][y] = -1;
+                    continue;
+                }
 
-	private static void addAirCorn(int value, int y, int x) {
-		if (value == -1) {
-			AirCorns.add(new AirCorn(y, x));
-		}
-	}
+                temp[x][y] += arr[x][y];
 
-	private static void findnode() {
-		for (int i = 0; i < R; i++) {
-			for (int j = 0; j < C; j++) {
-				if (board[i][j] > 0) {
-					nodes.offer(new node(i, j, board[i][j]));
-				}
-			}
-		}
-	}
+                for (int i = 0; i < 4; i++) {
+                    int nx = x + dx[i];
+                    int ny = y + dy[i];
 
-	private static void diffusenode() {
+                    if (nx < 0 || nx >= R || ny < 0 || ny >= C) continue;
+                    if (arr[nx][ny] == -1) continue;
 
-		while (!nodes.isEmpty()) {
+                    temp[nx][ny] += (arr[x][y] / 5);
+                    temp[x][y] -= (arr[x][y] / 5);
+                }
+            }
+        }
 
-			node node = nodes.poll();
+        return temp;
+    }
 
-			int sum = 0;
+    static void executeAirCleaner() {
+        // 위쪽 공기청정기는 반시계방향
+        int top = airCleanerRows.get(0);
 
-			for (int i = 0; i < 4; i++) {
-				int ny = node.y + dy[i];
-				int nx = node.x + dx[i];
+        for (int x = top - 1; x > 0; x--) {
+            arr[x][0] = arr[x-1][0];
+        }
+        
+        for (int y = 0; y < C - 1; y++) {
+            arr[0][y] = arr[0][y+1];
+        }
 
-				if (ny >= R || ny < 0 || nx >= C || nx < 0 || board[ny][nx] == -1) {
-					continue;
-				}
+        for (int x = 0; x < top; x++) {
+            arr[x][C-1] = arr[x+1][C-1];
+        }
+        
+        for (int y = C - 1; y > 1; y--) {
+            arr[top][y] = arr[top][y-1];
+        }
 
-				board[ny][nx] += node.count / 5;
+        arr[top][1] = 0;
+        
 
-				sum += node.count / 5;
-			}
+        // 아래쪽 공기청정기는 시계 방향
+        int bottom = airCleanerRows.get(1);
+        
+        for (int x = bottom + 1; x < R - 1; x++) {
+            arr[x][0] = arr[x+1][0];
+        }
 
-			board[node.y][node.x] -= sum;
-		}
-	}
+        for (int y = 0; y < C - 1; y++) {
+            arr[R-1][y] = arr[R-1][y+1];
+        }
 
-	private static void operateAirCorn(String direction) {
+        for (int x = R - 1; x > bottom; x--) {
+            arr[x][C-1] = arr[x-1][C-1];
+        }
 
-		int index = direction.equals("clockwise") ? 1 : 0;
-		AirCorn AirCorn = AirCorns.get(index);
+        for (int y = C - 1; y > 1; y--) {
+            arr[bottom][y] = arr[bottom][y-1];
+        }
 
-		int mr = direction.equals("clockwise") ? 1 : -1;
+        arr[bottom][1] = 0;
+    }
 
-		int y = AirCorn.y + mr;
-		int x = AirCorn.x;
+    static int calculateSum() {
+        int sum = 2;
 
-		board[y][x] = 0;
-
-		int yMaxRange = direction.equals("clockwise") ? R : AirCorn.y + 1;
-		int yMinyange = direction.equals("clockwise") ? AirCorn.y : 0;
-
-		for (int i = 0; i < 4; i++) {
-			while (true) {
-
-				int ny = y + (dy[i] * mr);
-				int nx = x + dx[i];
-
-				if (ny >= yMaxRange || ny < yMinyange || nx >= C || nx < 0) {
-					break;
-				}
-
-				board[y][x] = board[ny][nx] == -1 ? 0 : board[ny][nx];
-
-				y = ny;
-				x = nx;
-			}
-		}
-	}
+        for (int x = 0; x < R; x++) {
+            for (int y = 0; y < C; y++) {
+                sum += arr[x][y];
+            }
+        }
+        
+        return sum;
+    }
 }
