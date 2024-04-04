@@ -1,103 +1,83 @@
-import java.util.*;
-import java.io.*;
-import java.math.BigInteger;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.StringTokenizer;
 
-public class Main{
+public class Main {
 
-	static class node {
-		int y;
-		int x;
+    static int[][] map;
+    static int[] papers = new int[]{0, 5, 5, 5, 5, 5};
+    static int answer = Integer.MAX_VALUE;
 
-		public node(int y, int x) {
-			this.y = y;
-			this.x = x;
-		}
-	}
-	static int[] nums = new int[] {0,5,5,5,5,5};
-	public static void main(String[] args) throws IOException {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
-		int n = 10;
-		int board[][] = new int[n][n];
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+        map = new int[10][10];
 
-		for (int i = 0; i < 10; i++) {
-			st = new StringTokenizer(br.readLine());
-			for (int j = 0; j < 10; j++) {
-				board[i][j] = Integer.parseInt(st.nextToken());
-			}
-		}
-		int answer = btk(board,n);
-		if(answer>=1000000) {
-			answer=-1;
-		}
-		System.out.println(answer);
-	}
+        for (int i=0; i<10; i++){
+            st = new StringTokenizer(br.readLine());
 
-	private static int btk(int[][] board, int n) {
-		int min = 1000000;
-		node now = findOne(board,n);
-		if(now==null) return 0;
-		
-		for(int i=1;i<=5;i++) {
-			if(nums[i]<=0) continue;
-			
-			int answer =1000000;
-			
-			if(doColor(board,now,i)) {
-				nums[i]--;
-				answer = btk(board,n)+1;
-				backColor(board,now,i);
-				nums[i]++;
-			}
-			min=Math.min(min, answer);
-		}
+            for (int j=0; j<10; j++){
+                map[i][j] = Integer.parseInt(st.nextToken());
+            }
+        }
 
-		return min;
-	}
-	
-	private static void backColor(int[][] board, node now, int n) {
-		int y = now.y;
-		int x = now.x;
-		for(int i=y;i<y+n;i++) {
-			for(int j=x;j<x+n;j++) {
-				board[i][j]=1;
-			}
-		}
-		
-	}
+        dfs(0, 0, 0);
 
-	private static boolean doColor(int[][] board, node now, int n) {
-		int y = now.y;
-		int x = now.x;
-		if(y+n>10||x+n>10) return false;
-		
-		for(int i=y;i<y+n;i++) {
-			for(int j=x;j<x+n;j++) {
-				if(board[i][j]!=1) return false;
-			}
-		}
-		
-		for(int i=y;i<y+n;i++) {
-			for(int j=x;j<x+n;j++) {
-				board[i][j]=0;
-			}
-		}
-		return true;
-	}
-	
-	
-	private static node findOne(int[][] board, int n) {
-		int min = Integer.MAX_VALUE;
-		int y=-1;
-		int x=-1;
-		for(int i=0;i<n;i++) {
-			for(int j=0;j<n;j++) {
-				if(board[i][j]==1) {
-					return new node(i,j);
-				}
-			}
-		}
-	
-		return null;
-	}
+        if (answer == Integer.MAX_VALUE)
+            answer = -1;
+
+        System.out.println(answer);
+    }
+
+    private static void dfs(int y, int x, int count) {
+
+        if (y >= 10) {
+            answer = Math.min(answer, count);
+            return;
+        }
+
+        if (x > 9) {
+            dfs(y + 1, 0, count);
+            return;
+        }
+
+        if (map[y][x] == 1){
+            for (int k=5; k>0; k--){
+                if (papers[k] > 0 && alreadyAttach(y, x, k)){
+                    attach(y, x, k, 0);
+                    papers[k] -= 1;
+
+                    dfs(y, x + 1, count + 1);
+
+                    attach(y, x, k, 1);
+                    papers[k] += 1;
+                }
+            }
+        } else dfs(y, x + 1, count);
+    }
+
+    private static boolean alreadyAttach(int y, int x, int size) {
+
+        for (int i=y; i<y+size; i++){
+            for (int j=x; j<x+size; j++){
+                if (i < 0 || i >= 10 || j < 0 || j >= 10)
+                    return false;
+
+                if (map[i][j] != 1)
+                    return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static void attach(int y, int x, int size, int status){
+
+        for (int i=y; i<y+size; i++){
+            for (int j=x; j<x+size; j++){
+                map[i][j] = status;
+            }
+        }
+    }
 }
