@@ -3,54 +3,75 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
 
-class Gem
-{
-    int m,v;
-
-    public Gem(int m, int v) {
-        this.m = m;
-        this.v = v;
-    }
-}
 public class Main {
+
+    static class Jewelry implements Comparable<Jewelry>{
+
+        int weight;
+        int value;
+
+        public Jewelry(int weight, int value) {
+            this.weight = weight;
+            this.value = value;
+        }
+
+        @Override
+        public int compareTo(Jewelry o) {
+            if (this.weight == o.weight)
+                return Integer.compare(o.value, this.value);
+
+            return Integer.compare(this.weight, o.weight);
+        }
+    }
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
+
         int N = Integer.parseInt(st.nextToken());
         int K = Integer.parseInt(st.nextToken());
 
-        List<Gem> gems = new ArrayList<>();
-        for(int i = 0; i < N; ++i)
-        {
-            st = new StringTokenizer(br.readLine());
-            int m = Integer.parseInt(st.nextToken());
-            int v = Integer.parseInt(st.nextToken());
+        PriorityQueue<Jewelry> pq = new PriorityQueue<>();
 
-            gems.add(new Gem(m,v));
+        for (int i=0; i<N; i++){
+            st = new StringTokenizer(br.readLine());
+
+            int M = Integer.parseInt(st.nextToken());
+            int V = Integer.parseInt(st.nextToken());
+
+            pq.offer(new Jewelry(M, V));
         }
 
-        gems.sort((o1, o2) -> {
-            if (o1.m == o2.m) return o2.v - o1.v;
-            return o1.m - o2.m;
+        PriorityQueue<Integer> bag = new PriorityQueue<>(new Comparator<Integer>() {
+            @Override
+            public int compare(Integer o1, Integer o2) {
+                return Integer.compare(o1, o2);
+            }
         });
 
-        List<Integer> bags = new ArrayList<>();
-        for(int i = 0; i < K; ++i)
-        {
-            bags.add(Integer.parseInt(br.readLine()));
+        for (int i=0; i<K; i++){
+            bag.offer(Integer.parseInt(br.readLine()));
         }
-        Collections.sort(bags);
 
-        int gem_idx = 0;
-        int gem_size = gems.size();
-        PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder());
         long answer = 0;
-        for(int bag : bags)
-        {
-            while(gem_idx < gem_size && bag >= gems.get(gem_idx).m) pq.add(gems.get(gem_idx++).v);
 
-            if(!pq.isEmpty()) answer += pq.poll();
+        PriorityQueue<Jewelry> calc = new PriorityQueue<>(new Comparator<Jewelry>() {
+            @Override
+            public int compare(Jewelry o1, Jewelry o2) {
+                return o2.value - o1.value;
+            }
+        });
+
+        while(!bag.isEmpty()){
+            Integer curBag = bag.poll();
+
+            while(!pq.isEmpty() && curBag >= pq.peek().weight)
+                calc.offer(pq.poll());
+
+            if (!calc.isEmpty())
+                answer += calc.poll().value;
         }
+
         System.out.println(answer);
     }
 }
