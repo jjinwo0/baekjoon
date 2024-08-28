@@ -48,30 +48,24 @@ public class Main {
         // 작은 남자와 큰 여자의 키 비교
         while (!lowerMen.isEmpty() && !higherWomen.isEmpty()) {
 
-            int curMan = lowerMen.peek();    // 현재 작은 남자의 키
+            int curMan = lowerMen.poll();    // 현재 작은 남자의 키
             int curWoman = higherWomen.peek(); // 현재 큰 여자의 키
 
             if (curMan > curWoman) { // 작은 남자가 큰 여자보다 키가 크면 매칭
                 answer++;
-                lowerMen.poll();     // 매칭된 남자 큐에서 제거
                 higherWomen.poll();  // 매칭된 여자 큐에서 제거
-            } else {
-                lowerMen.poll();     // 매칭이 안되면 현재 남자를 버림
             }
         }
 
         // 작은 여자와 큰 남자의 키 비교
         while (!lowerWomen.isEmpty() && !higherMen.isEmpty()) {
 
-            int curWoman = lowerWomen.peek();  // 현재 작은 여자의 키
+            int curWoman = lowerWomen.poll();  // 현재 작은 여자의 키
             int curMan = higherMen.peek();     // 현재 큰 남자의 키
 
             if (curWoman > curMan) { // 작은 여자가 큰 남자보다 키가 크면 매칭
-                answer++;
-                lowerWomen.poll();   // 매칭된 여자 큐에서 제거
+                answer++;   // 매칭된 여자 큐에서 제거
                 higherMen.poll();    // 매칭된 남자 큐에서 제거
-            } else {
-                lowerWomen.poll();   // 매칭이 안되면 현재 여자를 버림
             }
         }
 
